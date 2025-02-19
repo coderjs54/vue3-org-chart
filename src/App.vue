@@ -528,7 +528,7 @@ const orgDataMore = ref({
 
 <template>
   <div class="wrapper">
-    <OrgChartWrapper :orgData="orgDataNew" />
+    <OrgChartWrapper :orgData="orgDataMore" />
   </div>
 </template>
 
