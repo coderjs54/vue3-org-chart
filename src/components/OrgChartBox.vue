@@ -3,6 +3,11 @@
     <div class="chart-wrapper">
       <OrgChart :orgData="orgData" ref="orgChartRef" :layout="layout" />
     </div>
+    <div class="file-wrapper">
+      <div class="file upload" @click="handleUploadFile">上传文件</div>
+      <div class="file download" @click="handleDownloadTemplate">下载文件模板</div>
+      <input hidden ref="fileInputRef" type="file" accept=".json" @input="handleFileInput">
+    </div>
     <div class="zoom-wrapper">当前缩放：{{ zoom.toFixed(2) }}</div>
     <div class="tool-wrapper">
       <div title="放大" class="tool add" @click.stop="handleClickAdd">放大</div>
@@ -22,11 +27,57 @@ const props = defineProps({
   orgData: Object
 })
 
+const emits = defineEmits(['updateOrgData'])
+
 const zoom = computed(() => orgChartRef && orgChartRef.value ? orgChartRef.value.zoom : 1)
 
+const fileInputRef = ref(null)
 const orgChartRef = ref(null)
 const layouts = ['horizontal', 'vertical']
 const layout = ref('vertical')
+
+const handleUploadFile = () => {
+  fileInputRef.value.click()
+}
+
+const handleFileInput = e => {
+  const files = e.target.files
+  console.log(files)
+  if (!files.length) {
+    return
+  }
+
+  const file = files[0]
+  readFile(file).then(result => {
+    try {
+      const json = JSON.parse(result)
+      emits('updateOrgData', json)
+      handleShowFull()
+    } catch(error) {
+      alert('文件内容不合法')
+    }
+  }).catch(() => {})
+}
+
+const readFile = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = e => {
+      resolve(e.target.result)
+    }
+    reader.onerror = reject
+    reader.readAsText(file, 'utf-8')
+  })
+}
+
+const handleDownloadTemplate = () => {
+  const link = document.createElement('a')
+  link.href = '/template.json'
+  link.download = 'template.json'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
 
 const handleClickAdd = () => {
   orgChartRef.value.zoomUp()
@@ -84,6 +135,46 @@ const handleChange = () => {
     box-shadow: 1px 2px 2px 0px #9fa4b2;
   }
 
+  .file-wrapper {
+    box-sizing: border-box;
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    padding: 6px 8px;
+    background-color: #fff;
+    border-radius: 5px;
+    user-select: none;
+    display: flex;
+    border: 1px solid #9fa4b2;
+    box-shadow: 1px 2px 2px 0px #9fa4b2;
+
+    .file {
+      box-sizing: border-box;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;      
+      transition: all .2s linear;
+
+      &:hover {
+        color: #07845A;
+      }
+
+      &.upload {
+        padding-right: 6px;
+        border-right: 1px solid #BDC1CC;
+      }
+
+      &.download {
+        padding-left: 6px;
+      }
+    }
+  }
+
   .tool-wrapper {
     box-sizing: border-box;
     position: absolute;
@@ -106,13 +197,18 @@ const handleChange = () => {
       justify-content: center;
       align-items: center;
       color: #333;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
+      
+      &:hover {
+        color: #07845A;
+      }
     }
 
     .add, .minus, .full, .download {
       border-bottom: 1px solid #BDC1CC;
+      transition: all .2s linear;
     }
   }
 }

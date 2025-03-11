@@ -1,0 +1,32 @@
+{
+  "name": "顶级部门",
+  "members": 7,
+  "type": "部门",
+  "code": "0000",
+  "manager": "部门主管",
+  "children": [
+    {
+      "name": "一级部门",
+      "manager": "部门主管1",
+      "type": "部门",
+      "members": 1,
+      "code": "00001",
+      "children": [
+        {
+          "name": "二级部门",
+          "manager": "部门主管11",
+          "type": "部门",
+          "members": 100,
+          "code": "000011"
+        },
+        {
+          "name": "二级部门",
+          "manager": "部门主管12",
+          "type": "部门",
+          "members": 100,
+          "code": "000012"
+        }
+      ]
+    }
+  ]
+}

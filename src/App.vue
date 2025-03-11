@@ -524,11 +524,15 @@ const orgDataMore = ref({
     }
   ]
 })
+
+const updateOrgData = (json) => {
+  orgDataMore.value = json
+}
 </script>
 
 <template>
   <div class="wrapper">
-    <OrgChartWrapper :orgData="orgDataMore" />
+    <OrgChartWrapper :orgData="orgDataMore" @updateOrgData="updateOrgData" />
   </div>
 </template>
 
